@@ -1,0 +1,59 @@
+<!--
+  Generated template for the ListMenu page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Menu</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color="royal" (click)="LogOut()">
+        <ion-icon name="log-out" ></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-card *ngFor="let item of listRepas">
+    <ion-item>
+      <ion-avatar item-left>
+        <img src="../assets/img/burger_sandwich.png">
+      </ion-avatar>
+      <h2>{{item.titre}}</h2>
+      <p>{{item.date | date: 'dd/MM/yyyy'}}</p>
+      <ion-avatar item-right *ngIf="isAdmin()" (click)="editRepa(item)">
+        <button ion-fab>
+          <ion-icon name="md-add"></ion-icon>
+        </button>
+      </ion-avatar>
+    </ion-item>
+
+    <img [src]="item.photo">
+
+    <ion-card-content>
+      <p>{{item.description}}</p>
+    </ion-card-content>
+
+    <ion-row>
+      <ion-col center>
+        <button ion-button color="primary" clear small icon-left>
+            {{item.nbreservation}} Réservation
+          </button>
+      </ion-col>
+      <ion-col text-right>
+        <button *ngIf="!item.isRever && !(item.date < dateInTimstamp)" (click)="reserver(item)" ion-button color="primary" icon-right>
+            Réserver {{ (item.date < dateInTimstamp)}}
+        </button>
+        <button *ngIf="item.isRever" (click)="detail(item)" ion-button color="primary" icon-right>
+            Voir détail 
+        </button>
+      </ion-col>
+
+    </ion-row>
+  </ion-card>
+</ion-content>

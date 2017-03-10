@@ -1,0 +1,27 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Detail de la réservation de {{repas.key}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col width-75><h2 style="font-weight: normal;">Heure de réservation :</h2></ion-col>
+      <ion-col width-20><h2 style="font-weight: normal;">{{heure}}</h2></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col width-75><h2 style="font-weight: normal;">Repas payé :</h2></ion-col>
+      <ion-col width-20><h2 style="font-weight: normal;">{{isPayed}}</h2></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col width-75><h2 style="font-weight: normal;">Repas prêt :</h2></ion-col>
+      <ion-col width-20><h2 style="font-weight: normal;">{{isReady}}</h2></ion-col>
+    </ion-row>
+  </ion-grid>
+  <button ion-button margin-top full (click)="cancel()">Retour</button>
+
+</ion-content>
