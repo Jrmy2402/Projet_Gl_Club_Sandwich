@@ -3,6 +3,6 @@ export interface Repas {
   info: string;
   photo: string;
   description: string;
-  reservation: any;
+  reservation?: Array<any>;
   key: string;
 }

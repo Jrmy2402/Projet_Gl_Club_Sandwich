@@ -37,10 +37,8 @@ export class LoginPage {
   // Attempt to login in through our User service
   doLogin() {
     this.firebase.login(this.account.email, this.account.password).subscribe((resp) => {
-      console.log(resp);
       // this.navCtrl.push(ListMenuPage);
     }, (err) => {
-       console.error(err);
       // this.navCtrl.push(MainPage); // TODO: Remove this when you add your signup endpoint
 
       // // Unable to sign up

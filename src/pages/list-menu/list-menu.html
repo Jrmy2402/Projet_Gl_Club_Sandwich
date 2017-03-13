@@ -22,13 +22,13 @@
   <ion-card *ngFor="let item of listRepas">
     <ion-item>
       <ion-avatar item-left>
-        <img src="../assets/img/burger_sandwich.png">
+        <img src="https://firebasestorage.googleapis.com/v0/b/appli-libre-de-choix-isen.appspot.com/o/burger_sandwich.png?alt=media">
       </ion-avatar>
       <h2>{{item.titre}}</h2>
       <p>{{item.date | date: 'dd/MM/yyyy'}}</p>
       <ion-avatar item-right *ngIf="isAdmin()" (click)="editRepa(item)">
         <button ion-fab>
-          <ion-icon name="md-add"></ion-icon>
+          <ion-icon name="md-create"></ion-icon>
         </button>
       </ion-avatar>
     </ion-item>
@@ -36,20 +36,23 @@
     <img [src]="item.photo">
 
     <ion-card-content>
-      <p>{{item.description}}</p>
+      <p style="white-space: pre-wrap; -webkit-font-smoothing: antialiased">{{item.description}}</p>
     </ion-card-content>
 
     <ion-row>
       <ion-col center>
         <button ion-button color="primary" clear small icon-left>
-            {{item.nbreservation}} Réservation
-          </button>
+          {{item.nbreservation}} Réservation
+        </button>
       </ion-col>
       <ion-col text-right>
-        <button *ngIf="!item.isRever && !(item.date < dateInTimstamp)" (click)="reserver(item)" ion-button color="primary" icon-right>
-            Réserver {{ (item.date < dateInTimstamp)}}
+        <button *ngIf="!isAdmin() && !item.isRever && authorized(item.date)" (click)="reserver(item)" ion-button color="primary" icon-right>
+            Réserver
         </button>
-        <button *ngIf="item.isRever" (click)="detail(item)" ion-button color="primary" icon-right>
+        <button *ngIf="!isAdmin() && item.isRever" (click)="detail(item)" ion-button color="primary" icon-right>
+            Voir détail 
+        </button>
+        <button *ngIf="isAdmin()" (click)="detailAdmin(item)" ion-button color="primary" icon-right>
             Voir détail 
         </button>
       </ion-col>

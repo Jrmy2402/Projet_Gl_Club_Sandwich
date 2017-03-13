@@ -33,9 +33,14 @@ export class ModalDetailPage implements OnInit, OnDestroy {
     this.isReady = myReservation.isReady ? 'Oui' : 'Non';
     this.isPayed = myReservation.isPayed ? 'Oui' : 'Non';
     this.firebase.eventReservation(this.repas.key).subscribe((resp) => {
-      this.heure = resp.heure;
-      this.isReady = resp.isReady ? 'Oui' : 'Non';
-      this.isPayed = resp.isPayed ? 'Oui' : 'Non';
+      if(resp){
+        this.heure = resp.heure;
+        this.isReady = resp.isReady ? 'Oui' : 'Non';
+        this.isPayed = resp.isPayed ? 'Oui' : 'Non';
+      } else {
+        this.viewCtrl.dismiss();
+      }
+     
     });
   }
 

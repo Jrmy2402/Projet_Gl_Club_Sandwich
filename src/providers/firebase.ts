@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase';
-import { Observable } from 'rxjs/Observable';
+import { Observable, } from 'rxjs/Rx';
 /*
   Generated class for the Firebase provider.
 
@@ -61,22 +61,29 @@ export class Firebase {
     });
   }
 
+  eventReservationAdmin (date: string) {
+    return Observable.create((observer: any) => {
+      let listReservation = this.db.ref('reservation/'+date);
+      listReservation.on('value', res => {
+        observer.next(res.val());
+      });
+    });
+  }
+
   closeEventReservation (date: string) {
-    // return Observable.create((observer: any) => {
       let listReservation = this.db.ref('reservation/'+date+'/'+this.getUserUid());
       listReservation.off('value')
-      // listReservation.on('value', res => {
-      // });
-    // });
+  }
+
+  closeEventReservationAdmin (date: string) {
+      let listReservation = this.db.ref('reservation/'+date);
+      listReservation.off('value')
   }
 
   listRepas() {
    
     return Observable.create((observer: any) => {
       const repas = this.db.ref('repas').orderByChild('date');
-      //  .startAt(1488728598);
-      //  .orderByChild('date').startAt(1488722598).limitToFirst(5);
-      // Get a database reference to our posts
       let handles = [];
       repas.on('value', snap => {
         for(const v in snap.val()){
@@ -87,7 +94,6 @@ export class Firebase {
           handles.forEach(reser => listReservation.off('value', reser));
           let reservation = listReservation.on('value', res => {
             this.arrayRepas[res.key].reservation = res.val();
-            console.log("tototo : ", res.val(), this.arrayRepas);
             observer.next(this.arrayRepas);
           });
           handles.push(reservation);
@@ -97,6 +103,25 @@ export class Firebase {
       });
     });
   }
+
+  infoUserByKey (keyUser : string){
+    return Observable.create((observer: any) => {
+      let usersRef = this.db.ref('users/'+keyUser);
+      usersRef.once('value', res => {
+        observer.next(res);
+        observer.complete();
+      });
+    })
+  }
+
+  infoUserReservation( ArrayReservation: Array<any> ) : any {
+    let observableBatch = [];
+    for(const keyUser in ArrayReservation){
+      observableBatch.push( this.infoUserByKey(keyUser) );
+    }
+
+    return Observable.forkJoin(observableBatch);
+  }
   
   private writeUserData(userId, nom, prenom, email) {
       firebase.database().ref('users/' + userId).set({
@@ -104,19 +129,25 @@ export class Firebase {
           prenom: prenom,
           email: email
       }).then(function(snapshot) {
-        console.log(snapshot)
       }, function(error) {
-        console.error(error);
       });
+  }
+
+  reservationAdmin (jour: string, heure: string, uid?: string, isReady?: string, isPayed?: string) {
+    firebase.database().ref('reservation/' + jour + '/' + (uid ? uid : firebase.auth().currentUser.uid)).set({
+        heure: heure,
+        isReady: isReady,
+        isPayed: isPayed,
+    }).then(function(snapshot) {
+    }, function(error) {
+    });
   }
 
   reservation (jour: string, heure: string) {
     firebase.database().ref('reservation/' + jour + '/' + firebase.auth().currentUser.uid).set({
         heure: heure
     }).then(function(snapshot) {
-      console.log(snapshot)
     }, function(error) {
-      console.error(error);
     });
   }
 
@@ -128,11 +159,13 @@ export class Firebase {
           description: description,
           photo: image
       }).then(function(snapshot) {
-        console.log(snapshot);
-        observer.next(snapshot);
-        observer.complete();
+        firebase.database().ref('reservation/' +jour).set({}).then(function(snapshot) {
+          observer.next(snapshot);
+          observer.complete();
+        }, function(error) {
+          observer.error(error);
+        });
       }, function(error) {
-        console.error(error);
         observer.error(error);
       });
     });
@@ -143,11 +176,8 @@ export class Firebase {
       const image = firebase.storage().ref(day);
       let task = image.putString(date, 'data_url');
       task.on('state_changed',(value)=>{
-        console.log(value.bytesTransferred/value.totalBytes);
       }, (err)=>{
-        console.log(err)
       }, () =>{
-        console.log("fini");
         this.getUrlImage(day).subscribe((resp) => {
           observer.next(resp);
           observer.complete();
@@ -159,7 +189,6 @@ export class Firebase {
   getUrlImage(day: string){
     return Observable.create((observer: any) => {
       firebase.storage().ref(day).getDownloadURL().then(function(url) {
-        console.log(url);
         observer.next(url);
         observer.complete();
       }).catch(function(error) {
@@ -187,23 +216,18 @@ export class Firebase {
     return Observable.create((observer: any) => {
       firebase.auth().onAuthStateChanged(function (user) {
           if (user) {
-            console.log("User : ", user);
             let userMe = firebase.database().ref('users/'+firebase.auth().currentUser.uid);
             userMe.once('value', res => {
-                console.log("value user : ", res.val());
                 observer.next(res.val()); 
             });
           } else {
-            console.log("Pas de user");
             observer.next();
-            // observer.error();
           }
       });
     });
   }
 
   logOut () {
-    console.log("logOut");
     return Observable.create((observer: any) => {
       firebase.auth().signOut().then(function () {
         observer.next();

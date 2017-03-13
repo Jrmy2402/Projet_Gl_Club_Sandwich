@@ -1,6 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { NavController, ViewController, NavParams } from 'ionic-angular';
+import {Component, ViewChild, NgZone} from '@angular/core';
+import {Validators, FormBuilder, FormGroup} from '@angular/forms';
+import { NavController, ViewController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 
 import { Camera } from 'ionic-native';
 import { Firebase } from '../../providers/firebase';
@@ -21,6 +21,7 @@ export class EditRepasPage {
   isReadyToSave: boolean;
 
   item: any;
+  loader: any;
 
   public event = {
     month: '1990-02-19'
@@ -33,14 +34,16 @@ export class EditRepasPage {
   public navParams: NavParams,
   public viewCtrl: ViewController,
   formBuilder: FormBuilder,
-  public firebase: Firebase) {
+  public firebase: Firebase,
+  public alertCtrl: AlertController,
+  public loadingCtrl: LoadingController,
+  private _zone: NgZone) {
     this.repas = navParams.get('repas');
-    console.log(this.repas.date);
     var date = new Date(this.repas.date);
     // Hours part from the timestamp
     var day = date.getDate();
     // Minutes part from the timestamp
-    var month = date.getMonth();
+    var month = date.getMonth() + 1;
     // Seconds part from the timestamp
     var year = date.getFullYear();
     var monthSting: string;
@@ -65,7 +68,6 @@ export class EditRepasPage {
         day: [formattedTime, Validators.required]
     });
     const that = this;
-    // debugger
     if(this.repas.photo){
       this.toDataUrlXMLH(this.repas.photo, function(base64Img) {
         that.form.patchValue({ 'profilePic': base64Img });
@@ -75,7 +77,6 @@ export class EditRepasPage {
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
       this.isReadyToSave = this.form.valid;
-      console.log(this.form);
     });
   }
 
@@ -84,13 +85,18 @@ export class EditRepasPage {
   }
 
   getPicture() {
-    console.log('getPicture');
     if (Camera['installed']()) {
-      Camera.getPicture({
-        targetWidth: 96,
-        targetHeight: 96
-      }).then((data) => {
-        this.form.patchValue({ 'profilePic': 'data:image/jpg;base64,' +  data });
+      let option = {
+        sourceType:Camera.PictureSourceType.CAMERA,
+        destinationType:Camera.DestinationType.DATA_URL,
+        correctOrientation:false,
+        saveToPhotoAlbum:true
+      };
+      Camera.getPicture(option).then((data) => {
+        // alert('Is good' + data);
+        this._zone.run(() => {
+          this.form.patchValue({ 'profilePic': 'data:image/jpg;base64,' +  data });
+        });
       }, (err) => {
         alert('Unable to take photo');
       })
@@ -101,8 +107,6 @@ export class EditRepasPage {
 
 
   processWebImage(event) {
-    console.log('processWebImage');
-    // debugger
     let input = this.fileInput.nativeElement;
 
     var reader = new FileReader();
@@ -110,7 +114,6 @@ export class EditRepasPage {
       if(input.parentNode){
         input.parentNode.removeChild(input);
       }
-      debugger
       var imageData = (readerEvent.target as any).result;
       this.form.patchValue({ 'profilePic': imageData });
     };
@@ -166,15 +169,7 @@ export class EditRepasPage {
   done() {
     if(!this.form.valid) { return; }
     else{
-      console.log(this.form.controls['day'].value);
-      const date = this.compareDate(this.form.controls['day'].value).getTime();
-      console.log(date);
-      this.firebase.saveImage(this.repas.key, this.form.controls['profilePic'].value).subscribe((resp) => {
-        this.firebase.modifRepas(this.repas.key, date, this.form.controls['titre'].value, this.form.controls['description'].value, resp).subscribe((resp) => {
-            this.viewCtrl.dismiss();
-        });
-      });
-      
+      this.showConfirm();
     }
   }
 
@@ -183,8 +178,40 @@ export class EditRepasPage {
     var yr1   = parseInt(str1.substring(0,4));
     var mon1  = parseInt(str1.substring(5,7));
     var dt1   = parseInt(str1.substring(8,10));
-    var date1 = new Date(yr1, mon1-1, dt1);
+    var date1 = new Date(yr1, mon1-1, dt1, 13, 45);
     return date1;
+  }
+
+   showConfirm() {
+    let confirm = this.alertCtrl.create({
+      title: 'Modifier le repas ?',
+      message: 'Attention toutes les réservations actuelles seront supprimées.',
+      buttons: [
+        {
+          text: 'Annuler',
+          handler: () => {
+          }
+        },
+        {
+          text: 'Modifier',
+          handler: () => {
+            this.loader = this.loadingCtrl.create({
+              content: "Please wait..."
+            });
+
+            this.loader.present();
+            const date = this.compareDate(this.form.controls['day'].value).getTime();
+            this.firebase.saveImage(this.repas.key, this.form.controls['profilePic'].value).subscribe((resp) => {
+              this.firebase.modifRepas(this.repas.key, date, this.form.controls['titre'].value, this.form.controls['description'].value, resp).subscribe((resp) => {
+                  this.viewCtrl.dismiss();
+                  this.loader.dismiss();
+              });
+            });
+          }
+        }
+      ]
+    });
+    confirm.present();
   }
 
 

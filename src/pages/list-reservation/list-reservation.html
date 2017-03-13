@@ -1,0 +1,40 @@
+<!--
+  Generated template for the ListReservation page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Liste des reservations</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-searchbar [(ngModel)]="searchTerm" placeholder="Recherche par nom, prénom ou heure"></ion-searchbar>
+  <ion-list>
+    <div class="Mylist" *ngFor="let reserve of reservation | reservationFilter:searchTerm">
+      <ion-item>
+        <h2>{{reserve.heure}}</h2>
+        <p>{{reserve.infoUser.prenom}} {{reserve.infoUser.nom}}</p>
+        <!--<ion-note item-right >Payé : {{(reserve.isPayed ? 'Oui' : 'Non')}}</ion-note>-->
+      </ion-item>
+      <ion-item style="border-bottom: 0px">
+        <ion-label> Le repas est payé :</ion-label>
+        <ion-toggle (ionChange)="toggleChange(reserve)" [(ngModel)]="reserve.isPayed"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label> Le repas est prêt :</ion-label>
+        <ion-toggle (ionChange)="toggleChange(reserve)" [(ngModel)]="reserve.isReady" ></ion-toggle>
+      </ion-item>
+
+      <!--<ion-item-options>
+        <button ion-button color="danger">
+          Supprimer
+        </button>
+      </ion-item-options>-->
+    </div>
+  </ion-list>
+</ion-content>

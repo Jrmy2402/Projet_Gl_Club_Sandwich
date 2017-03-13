@@ -6,7 +6,7 @@ import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
 import { SignupPage } from '../pages/signup/signup';
 import { ListMenuPage } from '../pages/list-menu/list-menu';
-import { ChargementPage } from '../pages/chargement/chargement'
+import { ListReservationPage } from '../pages/list-reservation/list-reservation';
 
 import { Firebase } from '../providers/firebase';
 import { UserModel } from '../models/user'
@@ -28,8 +28,6 @@ export class MyApp {
 
   constructor(public userModel: UserModel, public platform: Platform, public firebase: Firebase, public loadingCtrl: LoadingController) {
     this.initializeApp();
-
-    // this.firebase.init();
     // used for an example of ngFor and navigation
     this.pages = [{
         title: 'Login',
@@ -44,8 +42,8 @@ export class MyApp {
         component: ListMenuPage
       },
       {
-        title: 'ChargementPage',
-        component: ChargementPage
+        title: 'ListReservation',
+        component: ListReservationPage
       }
     ];
   }
@@ -69,7 +67,6 @@ export class MyApp {
       if (resp) {
         this.loader.dismiss();
         this.userModel.setUser(resp);
-        console.log("this.infoUser : ", this.userModel.getUser());
         this.rootPage = ListMenuPage;
         if(this.nav.last() && this.nav.last().component.name !== "ListMenuPage"){
            this.nav.push(ListMenuPage);

@@ -5,13 +5,14 @@ import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
 import { SignupPage } from '../pages/signup/signup';
 import { ListMenuPage } from '../pages/list-menu/list-menu';
-import { ChargementPage } from '../pages/chargement/chargement';
 import { ModalReservationPage } from '../pages/modal-reservation/modal-reservation';
 import { ModalDetailPage } from '../pages/modal-detail/modal-detail';
 import { UserModel } from '../models/user';
 import { EditRepasPage } from '../pages/edit-repas/edit-repas';
+import { ListReservationPage } from '../pages/list-reservation/list-reservation';
 
 import { Firebase } from '../providers/firebase';
+import { ReservationFilterPipe } from '../pages/list-reservation/list-reservation.pipe';
 
 
 @NgModule({
@@ -21,10 +22,11 @@ import { Firebase } from '../providers/firebase';
     LoginPage,
     SignupPage,
     ListMenuPage,
-    ChargementPage,
     ModalReservationPage,
     ModalDetailPage,
-    EditRepasPage
+    EditRepasPage,
+    ListReservationPage,
+    ReservationFilterPipe
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -36,10 +38,10 @@ import { Firebase } from '../providers/firebase';
     LoginPage,
     SignupPage,
     ListMenuPage,
-    ChargementPage,
     ModalReservationPage,
     ModalDetailPage,
-    EditRepasPage
+    EditRepasPage,
+    ListReservationPage
   ],
   providers: [
     Firebase,
