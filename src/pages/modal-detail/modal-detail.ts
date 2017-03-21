@@ -17,6 +17,7 @@ export class ModalDetailPage implements OnInit, OnDestroy {
   
   heure: string;
   isReady: string;
+  isServi: string;
   isPayed: string;
   private repas;
 
@@ -32,11 +33,13 @@ export class ModalDetailPage implements OnInit, OnDestroy {
     this.heure = myReservation.heure;
     this.isReady = myReservation.isReady ? 'Oui' : 'Non';
     this.isPayed = myReservation.isPayed ? 'Oui' : 'Non';
+    this.isServi = myReservation.isServi ? 'Oui' : 'Non';
     this.firebase.eventReservation(this.repas.key).subscribe((resp) => {
       if(resp){
         this.heure = resp.heure;
         this.isReady = resp.isReady ? 'Oui' : 'Non';
         this.isPayed = resp.isPayed ? 'Oui' : 'Non';
+        this.isServi = resp.isServi ? 'Oui' : 'Non';
       } else {
         this.viewCtrl.dismiss();
       }

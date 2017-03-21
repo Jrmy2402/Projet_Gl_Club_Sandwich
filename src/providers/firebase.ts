@@ -133,11 +133,12 @@ export class Firebase {
       });
   }
 
-  reservationAdmin (jour: string, heure: string, uid?: string, isReady?: string, isPayed?: string) {
+  reservationAdmin (jour: string, heure: string, uid?: string, isReady?: string, isPayed?: string, isServi?: string) {
     firebase.database().ref('reservation/' + jour + '/' + (uid ? uid : firebase.auth().currentUser.uid)).set({
         heure: heure,
         isReady: isReady,
         isPayed: isPayed,
+        isServi: isServi
     }).then(function(snapshot) {
     }, function(error) {
     });

@@ -19,7 +19,6 @@
       <ion-item>
         <h2>{{reserve.heure}}</h2>
         <p>{{reserve.infoUser.prenom}} {{reserve.infoUser.nom}}</p>
-        <!--<ion-note item-right >Payé : {{(reserve.isPayed ? 'Oui' : 'Non')}}</ion-note>-->
       </ion-item>
       <ion-item style="border-bottom: 0px">
         <ion-label> Le repas est payé :</ion-label>
@@ -28,6 +27,10 @@
       <ion-item>
         <ion-label> Le repas est prêt :</ion-label>
         <ion-toggle (ionChange)="toggleChange(reserve)" [(ngModel)]="reserve.isReady" ></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label> Le repas est servi :</ion-label>
+        <ion-toggle (ionChange)="toggleChange(reserve)" [(ngModel)]="reserve.isServi" ></ion-toggle>
       </ion-item>
 
       <!--<ion-item-options>

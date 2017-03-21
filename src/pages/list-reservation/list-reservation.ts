@@ -34,6 +34,7 @@ export class ListReservationPage implements OnInit, OnDestroy {
               this.repas.reservation[user.key].key = user.key;
               this.repas.reservation[user.key].isReady = !this.repas.reservation[user.key].isReady ? false : this.repas.reservation[user.key].isReady;
               this.repas.reservation[user.key].isPayed = !this.repas.reservation[user.key].isPayed ? false : this.repas.reservation[user.key].isPayed;
+              this.repas.reservation[user.key].isServi = !this.repas.reservation[user.key].isServi ? false : this.repas.reservation[user.key].isServi;
               this.reservation.push(this.repas.reservation[user.key]);
             }
             this._zone.run(() => {
@@ -60,7 +61,7 @@ export class ListReservationPage implements OnInit, OnDestroy {
   }
 
   toggleChange(reservation: any){
-    this.firebase.reservationAdmin(this.repas.key, reservation.heure, reservation.key, reservation.isReady, reservation.isPayed);
+    this.firebase.reservationAdmin(this.repas.key, reservation.heure, reservation.key, reservation.isReady, reservation.isPayed, reservation.isServi);
   }
 
 }
